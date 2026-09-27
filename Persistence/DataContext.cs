@@ -11,11 +11,16 @@ namespace Persistence
         public DataContext(DbContextOptions<DataContext> options)
             : base(options) { }
 
+        public DbSet<Categories> Categories { get; set; }
+        public DbSet<Shoes> Shoes { get; set; }
+        public DbSet<ShoesSize> ShoesSizes { get; set; }
+        public DbSet<ShoesImages> ShoesImages { get; set; }
 
-        public DbSet<Categories> categories { get; set; }
-        public DbSet<Shoes> shoes { get; set; }
-        public DbSet<ShoesSize> shoesSizes { get; set; }
-        public DbSet<ShoesImages> shoesImages { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(DataContext).Assembly);
+        }
 
     }
 }

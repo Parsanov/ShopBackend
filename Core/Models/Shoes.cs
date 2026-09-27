@@ -5,10 +5,9 @@ namespace Core.Models
 {
     public class Shoes
     {
-        [Key]
-        public Guid Id { get; set; }
+        public int Id { get; set; }
         public string BrandName { get; set; }
-        public string Desciption { get; set; }
+        public string Description { get; set; }
         public decimal Price { get; set; }
         public bool Available { get; set; }
         public string VendorCode { get; set; }
@@ -16,8 +15,7 @@ namespace Core.Models
         public List<ShoesSize> ShoesSizes { get; set; }
         public List<ShoesImages> Images { get; set; }
 
-        [ForeignKey("CategoriesId")]
-        public Guid CategoriesId { get; set; }
+        public int CategoriesId { get; set; }
         public Categories Categories { get; set; }
 
     }
