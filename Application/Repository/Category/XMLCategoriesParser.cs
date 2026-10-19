@@ -1,20 +1,12 @@
-﻿
-using Core.DTO.Xml.DTO;
+﻿using Core.DTO.Xml.DTO;
 using Core.Interfaces;
 using Persistence;
 using System.Xml.Linq;
 
-namespace Application.Repository
+namespace Application.Repository.Category
 {
     public class XMLCategoriesParser : IXMLCategoriesParser
     {
-        private readonly DataContext _dataContext;
-
-        public XMLCategoriesParser(DataContext dataContext)
-        {
-            _dataContext = dataContext;
-        }
-
 
         public async Task<IEnumerable<XMLCategoryDTO>> ParseCategoriesAsync(string xmlFile)
         {
@@ -25,13 +17,12 @@ namespace Application.Repository
             var categories = doc.Descendants("category")
                 .Select(category => new XMLCategoryDTO
                 {
-                    NameCategory = category.Value,
-                    CategoryId = (int)category.Attribute("id")
+                    XmlId = (int)category.Attribute("id"),
+                    ParentXmlId= (int?)category.Attribute("parentId"),
+                    NameCategory = category.Value
                 }).ToList();
             return categories;
         }
-
-
 
     }
 }

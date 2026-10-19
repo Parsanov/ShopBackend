@@ -5,20 +5,20 @@ namespace API.Controllers
 {
     public class XMLParserController : Controller
     {
-        private readonly IXMLCategoriesParser _categoriesParser;
-        private readonly IXMLShoesParser _shoesParser;
+        private readonly ICategoryRepository _categoryRepository;
+        private readonly IShoesRepository _shoesRepository;
 
-        public XMLParserController(IXMLCategoriesParser categoriesParser, IXMLShoesParser shoesParser)
+        public XMLParserController(ICategoryRepository categoryRepository, IShoesRepository shoesRepository)
         {
-            _categoriesParser = categoriesParser;
-            _shoesParser = shoesParser;
+            _categoryRepository = categoryRepository;
+            _shoesRepository = shoesRepository;
         }
 
 
-       [HttpPost("ParseCategoriesXML")]
+        [HttpPost("ParseCategoriesXML")]
         public async Task<IActionResult> ParseCategoriesXML(IFormFile xmlFile)
         {
-            if (xmlFile == null || xmlFile.Length == 0 ) return BadRequest("File is empty or null");
+            if (xmlFile == null || xmlFile.Length == 0) return BadRequest("File is empty or null");
 
             var tempFilePath = Path.Combine(Path.GetTempFileName() + Path.GetExtension(xmlFile.FileName));
 
@@ -27,11 +27,10 @@ namespace API.Controllers
                 await xmlFile.CopyToAsync(fileStream);
             }
 
-            var categories = await _categoriesParser.ParseCategoriesAsync(tempFilePath);
+            await _categoryRepository.UploadAsync(tempFilePath);
 
-           return Ok(categories);
+            return Ok();
         }
-
 
 
         [HttpPost("ParseShoesXML")]
@@ -39,7 +38,6 @@ namespace API.Controllers
         {
             if (xmlFile == null || xmlFile.Length == 0) return BadRequest("File is empty or null");
 
-
             var tempFilePath = Path.Combine(Path.GetTempFileName() + Path.GetExtension(xmlFile.FileName));
 
             using (var fileStream = new FileStream(tempFilePath, FileMode.Create, FileAccess.Write, FileShare.None))
@@ -47,8 +45,12 @@ namespace API.Controllers
                 await xmlFile.CopyToAsync(fileStream);
             }
 
-            var shoes = await _shoesParser.ParseShoesAsync(tempFilePath);
-            return Ok(shoes);
+            await _shoesRepository.UploadAsync(tempFilePath);
+
+            return Ok();
         }
+
+
+      
     }
 }

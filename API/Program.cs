@@ -1,4 +1,5 @@
-using Application.Repository;
+using Application.Repository.Category;
+using Application.Repository.Shoes;
 using Core.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
@@ -13,7 +14,13 @@ builder.Services.AddDbContext<DataContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddScoped<IXMLCategoriesParser, XMLCategoriesParser>();
+builder.Services.AddScoped<IDBCategoryRepository, DBCategoryRepository>();
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+
+builder.Services.AddScoped<IDBShoesRepository, DBShoesRepository>();
+builder.Services.AddScoped<IShoesRepository, ShoesRepository>();
 builder.Services.AddScoped<IXMLShoesParser, XMLShoesParser>();
+
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

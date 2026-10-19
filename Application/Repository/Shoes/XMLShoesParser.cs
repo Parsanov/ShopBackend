@@ -1,10 +1,8 @@
-﻿
-
-using Core.DTO.Xml.DTO;
+﻿using Core.DTO.Xml.DTO;
 using Core.Interfaces;
 using System.Xml.Linq;
 
-namespace Application.Repository
+namespace Application.Repository.Shoes
 {
     public class XMLShoesParser : IXMLShoesParser
     {

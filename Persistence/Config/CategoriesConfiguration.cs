@@ -11,12 +11,12 @@ namespace Persistence.Config
     {
         public void Configure(EntityTypeBuilder<Categories> builder)
         {
-            builder.HasKey(c => c.Id);
-            builder.Property(c => c.NameCategory).IsRequired().HasMaxLength(100);
-            builder.HasMany(c => c.Shoes)
-                   .WithOne(s => s.Categories)
-                   .HasForeignKey(s => s.CategoriesId)
-                   .OnDelete(DeleteBehavior.Cascade);
+            builder.Property(c => c.Id).ValueGeneratedNever();
+
+            builder.HasOne(c => c.Parent)
+                   .WithMany(c => c.Children)
+                   .HasForeignKey(c => c.ParentId)
+                   .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }
