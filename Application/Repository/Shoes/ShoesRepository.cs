@@ -1,8 +1,7 @@
-﻿using Core.DTO.Xml.DTO;
+﻿using Core.DTO.CardDTO;
+using Core.DTO.Xml.DTO;
 using Core.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using Core.Pagination;
 
 namespace Application.Repository.Shoes
 {
@@ -17,10 +16,9 @@ namespace Application.Repository.Shoes
             _xmlShoes = xmlShoes;
         }
 
-
-        public Task<IEnumerable<XMLShoesDTO>> GetAsync()
+        public async Task<PagedResult<ShoesCardDTO>> GetShoesAsync(PaginationParams pagination, CancellationToken ct)
         {
-            throw new NotImplementedException();
+            return await _dBShoes.GetShoesAsync(pagination, ct);
         }
 
         public async Task UploadAsync(string xmlFile)

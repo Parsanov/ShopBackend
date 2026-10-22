@@ -1,6 +1,9 @@
-﻿using Core.DTO.Xml.DTO;
+﻿using Core.DTO.CardDTO;
+using Core.DTO.Xml.DTO;
 using Core.Interfaces;
 using Core.Models;
+using Core.Pagination;
+using Microsoft.EntityFrameworkCore;
 using Persistence;
 using System.Text.RegularExpressions;
 
@@ -17,9 +20,18 @@ namespace Application.Repository.Shoes
         }
 
 
-        public Task<IEnumerable<Core.Models.Shoes>> GetAllShoesAsync()
+        public async Task<PagedResult<ShoesCardDTO>> GetShoesAsync(PaginationParams pagination, CancellationToken ct)
         {
-            throw new NotImplementedException();
+            return await _dataContext.Shoes
+              .AsNoTracking()
+              .OrderBy(i => i.Id)
+              .Select(s => new ShoesCardDTO(
+                    s.Id,
+                    s.BrandName,
+                    s.Price,
+                    s.Images.Select(i => i.ImageUrl).FirstOrDefault(),
+                    s.Available))
+            .ToPagedResultAsync(pagination, ct);
         }
 
         public async Task UploadShoesAsync(IEnumerable<XMLShoesDTO> shoesDTOs)
