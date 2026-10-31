@@ -1,4 +1,5 @@
 ﻿using Core.DTO.CardDTO;
+using Core.DTO.ShoesDTO;
 using Core.DTO.Xml.DTO;
 using Core.Pagination;
 using System;
@@ -10,6 +11,11 @@ namespace Core.Interfaces
     public interface IShoesRepository
     {
         Task<PagedResult<ShoesCardDTO>> GetShoesAsync(PaginationParams pagination, CancellationToken ct);
+
+        Task<ShoesDTO?> GetOneShoes(int id, CancellationToken ct);
+
         Task UploadAsync(string xmlFile);
+
+        Task AddAsync(string xmlFile);
     }
 }

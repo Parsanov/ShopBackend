@@ -3,6 +3,8 @@ namespace Core.DTO.Xml.DTO
 {
     public class XMLShoesDTO
     {
+        public string ExternalGroupId { get; set; }
+        public string ExternalOfferId { get; set; }
         public string BrandName { get; set; }
         public string Description { get; set; }
         public decimal Price { get; set; }

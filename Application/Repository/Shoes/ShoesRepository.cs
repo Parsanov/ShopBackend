@@ -1,5 +1,5 @@
 ﻿using Core.DTO.CardDTO;
-using Core.DTO.Xml.DTO;
+using Core.DTO.ShoesDTO;
 using Core.Interfaces;
 using Core.Pagination;
 
@@ -16,6 +16,11 @@ namespace Application.Repository.Shoes
             _xmlShoes = xmlShoes;
         }
 
+        public async Task<ShoesDTO?> GetOneShoes(int id, CancellationToken ct)
+        {
+            return await _dBShoes.GetOneShoes(id, ct);
+        }
+
         public async Task<PagedResult<ShoesCardDTO>> GetShoesAsync(PaginationParams pagination, CancellationToken ct)
         {
             return await _dBShoes.GetShoesAsync(pagination, ct);
@@ -24,7 +29,12 @@ namespace Application.Repository.Shoes
         public async Task UploadAsync(string xmlFile)
         {
             var xmlShoes = await _xmlShoes.ParseShoesAsync(xmlFile);
-            await _dBShoes.UploadShoesAsync(xmlShoes);
+            await _dBShoes.UpdateShoesAsync(xmlShoes);
+        }
+        public async Task AddAsync(string xmlFile)
+        {
+            var xmlShoes = await _xmlShoes.ParseShoesAsync(xmlFile);
+            await _dBShoes.AddShoesAsync(xmlShoes);
         }
 
 

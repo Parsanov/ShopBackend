@@ -16,7 +16,7 @@ namespace API.Controllers
 
        
 
-        [HttpGet("/api/shoes")]
+        [HttpGet("/api/allShoes")]
         public async Task<ActionResult<PagedResult<ShoesCardDTO>>> GetShoes(
             [FromQuery] PaginationParams pagination,
             CancellationToken ct)
@@ -24,6 +24,18 @@ namespace API.Controllers
             var result = await _shoesRepository.GetShoesAsync(pagination, ct);
 
             return Ok(result);
+        }
+
+
+        [HttpGet("api/getOneShoes{id:int}")]
+        public async Task<IActionResult> GetOneShoes(int id, CancellationToken ct)
+        {
+            var shoes = await _shoesRepository.GetOneShoes(id, ct);
+
+            if (shoes is null)
+                return NotFound();
+
+            return Ok(shoes);
         }
     }
 }

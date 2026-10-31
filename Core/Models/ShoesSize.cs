@@ -8,6 +8,8 @@ namespace Core.Models
         public int Id { get; set; }
         public byte Size { get; set; }
         public short QuantityInStock { get; set; }
+        public string ExternalOfferId { get; set; }
+        public bool Available { get; set; }
 
         public int ShoesId { get; set; }
         public Shoes Shoes { get; set; }

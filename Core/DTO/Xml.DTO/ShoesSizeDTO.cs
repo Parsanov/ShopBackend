@@ -5,6 +5,7 @@ namespace Core.DTO.Xml.DTO
     {
         public byte Size { get; set; }
         public short QuantityInStock { get; set; }
+        public string ExternalOfferId { get; set; }
         public int ShoesId { get; set; }
     }
 }

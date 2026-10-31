@@ -48,9 +48,6 @@ namespace Persistence.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<bool>("Available")
-                        .HasColumnType("boolean");
-
                     b.Property<string>("BrandName")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -63,6 +60,10 @@ namespace Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("ExternalGroupId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
 
@@ -71,7 +72,7 @@ namespace Persistence.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
 
-                    b.Property<decimal>("Weight")
+                    b.Property<decimal?>("Weight")
                         .HasColumnType("numeric");
 
                     b.HasKey("Id");
@@ -110,6 +111,12 @@ namespace Persistence.Migrations
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Available")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("ExternalOfferId")
+                        .HasColumnType("text");
 
                     b.Property<short>("QuantityInStock")
                         .HasColumnType("smallint");
