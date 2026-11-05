@@ -1,6 +1,7 @@
 ﻿using Core.DTO.CardDTO;
 using Core.DTO.ShoesDTO;
 using Core.DTO.Xml.DTO;
+using Core.Models;
 using Core.Pagination;
 using System;
 using System.Collections.Generic;
@@ -17,5 +18,6 @@ namespace Core.Interfaces
         Task UploadAsync(string xmlFile);
 
         Task AddAsync(string xmlFile);
+        Task<PagedResult<ShoesCardDTO>> SortAsync(ShoesFilterQuery filter);
     }
 }

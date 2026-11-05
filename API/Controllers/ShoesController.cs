@@ -1,5 +1,6 @@
 ﻿using Core.DTO.CardDTO;
 using Core.Interfaces;
+using Core.Models;
 using Core.Pagination;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,7 +17,7 @@ namespace API.Controllers
 
        
 
-        [HttpGet("/api/allShoes")]
+        [HttpGet("/api/shoes/allShoes")]
         public async Task<ActionResult<PagedResult<ShoesCardDTO>>> GetShoes(
             [FromQuery] PaginationParams pagination,
             CancellationToken ct)
@@ -27,7 +28,7 @@ namespace API.Controllers
         }
 
 
-        [HttpGet("api/getOneShoes{id:int}")]
+        [HttpGet("api/shoes/getOneShoes{id:int}")]
         public async Task<IActionResult> GetOneShoes(int id, CancellationToken ct)
         {
             var shoes = await _shoesRepository.GetOneShoes(id, ct);
@@ -37,5 +38,13 @@ namespace API.Controllers
 
             return Ok(shoes);
         }
+
+        [HttpPost("api/shoes/sortShoes")]
+        public async Task<ActionResult<PagedResult<ShoesCardDTO>>> GetSortShoes([FromQuery] ShoesFilterQuery filterQuery)
+        { 
+            var result = await _shoesRepository.SortAsync(filterQuery);
+            return Ok(result);
+        }
+
     }
 }

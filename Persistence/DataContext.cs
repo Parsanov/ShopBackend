@@ -19,7 +19,10 @@ namespace Persistence
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.HasPostgresExtension("pg_trgm");
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(DataContext).Assembly);
+            base.OnModelCreating(modelBuilder);
+
         }
 
     }

@@ -8,6 +8,7 @@ namespace Core.DTO.CardDTO
           int Id,
           string BrandName,
           decimal Price,
-          string? MainImageUrl
+          string? MainImageUrl,
+          DateTime CreatedAt
         );
 }

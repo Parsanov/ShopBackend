@@ -1,8 +1,5 @@
-﻿using Core.DTO.Xml.DTO;
+﻿using Core.DTO.CategoriesDTO;
 using Core.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Application.Repository.Category
 {
@@ -17,11 +14,14 @@ namespace Application.Repository.Category
             _dBCategoryRepository = dBCategoryRepository;
         }
 
-
-
-        public Task<IEnumerable<XMLCategoryDTO>> GetAsync()
+        public async Task<HashSet<int>> FiltredCategories(int categoryId)
         {
-            throw new NotImplementedException();
+            return await _dBCategoryRepository.GetCategoryWithDescendantsAsync(categoryId);
+        }
+
+        public async Task<List<CategoriesDTO>> GetAsync()
+        {
+            return await _dBCategoryRepository.GetAllCategoriesTreeAsync();
         }
 
         public async Task UploadAsync(string xmlFile)
@@ -29,5 +29,7 @@ namespace Application.Repository.Category
             var xmlCategories = await _xmlCategoriesParser.ParseCategoriesAsync(xmlFile);
             await _dBCategoryRepository.UploadCategoriesAsync(xmlCategories);
         }
+
+
     }
 }

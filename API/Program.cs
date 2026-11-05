@@ -1,6 +1,7 @@
 using Application.Repository.Category;
 using Application.Repository.Shoes;
 using Core.Interfaces;
+using Core.Models;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
 
@@ -21,6 +22,19 @@ builder.Services.AddScoped<IDBShoesRepository, DBShoesRepository>();
 builder.Services.AddScoped<IShoesRepository, ShoesRepository>();
 builder.Services.AddScoped<IXMLShoesParser, XMLShoesParser>();
 
+builder.Services.AddScoped<IShoesFilterQuery, ShoesFilterQueryRepository>();
+
+
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(
+        policy =>
+        {
+            policy.WithOrigins("https://localhost:7119",
+                                "https://localhost:5279");
+        });
+});
+
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -34,6 +48,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors();
 
 app.UseAuthorization();
 

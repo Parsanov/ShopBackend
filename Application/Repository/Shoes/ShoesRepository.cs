@@ -1,6 +1,7 @@
 ﻿using Core.DTO.CardDTO;
 using Core.DTO.ShoesDTO;
 using Core.Interfaces;
+using Core.Models;
 using Core.Pagination;
 
 namespace Application.Repository.Shoes
@@ -9,11 +10,15 @@ namespace Application.Repository.Shoes
     {
         private readonly IDBShoesRepository _dBShoes;
         private readonly IXMLShoesParser _xmlShoes;
+        private readonly IShoesFilterQuery _shoesFilter;
+        private readonly ICategoryRepository _categoryRepository;
 
-        public ShoesRepository(IDBShoesRepository dBShoes, IXMLShoesParser xmlShoes)
+        public ShoesRepository(IDBShoesRepository dBShoes, IXMLShoesParser xmlShoes, IShoesFilterQuery shoesFilter, ICategoryRepository categoryRepository)
         {
             _dBShoes = dBShoes;
             _xmlShoes = xmlShoes;
+            _shoesFilter = shoesFilter;
+            _categoryRepository = categoryRepository;
         }
 
         public async Task<ShoesDTO?> GetOneShoes(int id, CancellationToken ct)
@@ -37,7 +42,15 @@ namespace Application.Repository.Shoes
             await _dBShoes.AddShoesAsync(xmlShoes);
         }
 
+        public async Task<PagedResult<ShoesCardDTO>> SortAsync(ShoesFilterQuery filter)
+        {
+            HashSet<int>? categoryIds = null;
 
+            if (filter.CategoryId is int selectedCategoriesId)
+                categoryIds = await _categoryRepository.FiltredCategories(selectedCategoriesId);
+
+            return await _shoesFilter.GetFilteredAsync(filter, categoryIds);
+        }
     }
 }
  

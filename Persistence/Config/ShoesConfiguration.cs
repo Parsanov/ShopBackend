@@ -8,6 +8,14 @@ namespace Persistence.Config
     {
         public void Configure(EntityTypeBuilder<Shoes> builder)
         {
+
+            builder.HasIndex(i => i.BrandName)
+                .HasMethod("gin")
+                .HasOperators("gin_trgm_ops");
+
+            builder.HasIndex(s => s.ExternalGroupId).IsUnique();
+            builder.HasIndex(s => s.Price);
+
             builder.HasKey(s => s.Id);
             builder.Property(s => s.BrandName).IsRequired()
                 .HasMaxLength(100);

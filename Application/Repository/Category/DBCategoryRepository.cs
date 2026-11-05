@@ -1,4 +1,5 @@
-﻿using Core.DTO.Xml.DTO;
+﻿using Core.DTO.CategoriesDTO;
+using Core.DTO.Xml.DTO;
 using Core.Interfaces;
 using Core.Models;
 using Microsoft.EntityFrameworkCore;
@@ -16,9 +17,54 @@ namespace Application.Repository.Category
         }
 
 
-        public Task<IEnumerable<Categories>> GetAllCategoriesAsync()
+        public async Task<List<CategoriesDTO>> GetAllCategoriesTreeAsync()
         {
-            throw new NotImplementedException();
+            var allCategories = await _dataContext.Categories
+                .AsNoTracking()
+                .Select(c => new { c.Id, c.NameCategory, c.ParentId })
+                .ToListAsync();
+
+            var childrenByParent = allCategories
+                .GroupBy(c => c.ParentId ?? -1)
+                .ToDictionary(g => g.Key, g => g.ToList());
+
+            List<CategoriesDTO> BuildBunch(int parentKey) =>
+                childrenByParent.TryGetValue(parentKey, out var children)
+                ? children.Select(c => new CategoriesDTO(c.Id, c.NameCategory, c.ParentId, BuildBunch(c.Id))).ToList()
+                : new List<CategoriesDTO>();
+
+            return BuildBunch(-1);
+                
+        }
+
+        public async Task<HashSet<int>> GetCategoryWithDescendantsAsync(int categoryId)
+        {
+            var categorisLink = await _dataContext.Categories
+                .AsNoTracking()
+                .Select(c => new { c.Id, c.ParentId })
+                .ToListAsync();
+
+            if (!categorisLink.Any(c => c.Id == categoryId))
+                return new HashSet<int>();
+
+            ILookup<int?, int> childrenByParent = categorisLink.ToLookup(c => c.ParentId, c => c.Id);
+
+            var result = new HashSet<int> { categoryId };
+            var toVisit = new Queue<int>();
+
+            while (toVisit.Count > 0)
+            {
+                int currentId = toVisit.Dequeue();
+
+                foreach (int childrenId in childrenByParent[currentId])
+                {
+                    if (result.Add(childrenId))
+                        toVisit.Enqueue(childrenId);
+                    
+                }
+            }
+
+            return result;
         }
 
         public async Task UploadCategoriesAsync(IEnumerable<XMLCategoryDTO> categories)

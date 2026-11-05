@@ -6,7 +6,6 @@ using Core.Models;
 using Core.Pagination;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
-using System.Net.ServerSentEvents;
 using System.Text.RegularExpressions;
 
 
@@ -31,7 +30,8 @@ namespace Application.Repository.Shoes
                     s.Id,
                     s.BrandName,
                     s.Price,
-                    s.Images.Select(i => i.ImageUrl).FirstOrDefault()
+                    s.Images.Select(i => i.ImageUrl).FirstOrDefault(),
+                    s.CreatedAt
                     ))
             .ToPagedResultAsync(pagination, ct);
         }
@@ -150,6 +150,10 @@ namespace Application.Repository.Shoes
                 .Include(s => s.ShoesSizes)
                 .ToDictionaryAsync(s => s.ExternalGroupId);
 
+            var feedGroupId = shoesList.Select(dto => dto.ExternalGroupId).ToHashSet();
+            var feedOfferId = shoesList.Select(dto => dto.ExternalOfferId).ToHashSet();
+
+
             var groupedOffers = shoesList.GroupBy(dto => dto.ExternalGroupId);
 
             foreach (var group in groupedOffers)
@@ -167,6 +171,8 @@ namespace Application.Repository.Shoes
                     shoe.Price = firstOffer.Price;
                 }
 
+                shoe.IsActive = true;
+
                 foreach (var offer in group)
                 {
                     var size = shoe.ShoesSizes.FirstOrDefault(s => s.ExternalOfferId == offer.ExternalOfferId);
@@ -181,7 +187,34 @@ namespace Application.Repository.Shoes
                         size.Available = offer.Available;
                     }
                 }
+
+                foreach (var shoeActive in existingShoes.Values
+                                            .Where(s => !feedGroupId.Contains(s.ExternalGroupId)))
+                {
+                    shoeActive.IsActive = false;
+                }
+
+                foreach (var size in existingShoes.Values.
+                                            SelectMany(s => s.ShoesSizes).
+                                            Where(z => !feedOfferId.Contains(z.ExternalOfferId)))
+                {
+                    size.Available = false;
+                    size.QuantityInStock = 0;
+                }
+
             }
+            HashSet<int> knownCategoryIds = (await _dataContext.Categories
+            .Select(c => c.Id)
+            .ToListAsync()).ToHashSet();
+
+
+            var missingCategoryIds = shoesList
+                .Select(dto => dto.CategoriesId)
+                .Where(id => !knownCategoryIds.Contains(id))
+                .Distinct()
+                .ToList();
+
+            Console.WriteLine($"Відсутні категорії: {string.Join(", ", missingCategoryIds)}");
 
             await _dataContext.SaveChangesAsync();
         }
@@ -205,6 +238,9 @@ namespace Application.Repository.Shoes
             {
                 ExternalGroupId = xMLShoesDTO.ExternalGroupId,
                 BrandName = xMLShoesDTO.BrandName,
+                CreatedAt = DateTime.UtcNow,
+                CategoriesId = xMLShoesDTO.CategoriesId,
+                IsActive = true,
                 Description = xMLShoesDTO.Description,
                 Price = xMLShoesDTO.Price,
                 VendorCode = xMLShoesDTO.VendorCode,
